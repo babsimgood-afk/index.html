@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>민원서비스 검색 및 필터</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <header class="bg-indigo-700 text-white shadow-lg sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold flex items-center gap-2">
+          <i class="fa-solid fa-landmark"></i>
+          <span>민원서비스 원스톱 검색 portal</span>
+        </h1>
+        <p class="text-indigo-200 text-sm mt-1">원하시는 민원 서비스를 빠르게 검색하고 확인하세요.</p>
+      </div>
+      <div class="flex items-center gap-2 self-end md:self-auto">
+        <span class="text-xs bg-indigo-800 px-3 py-1.5 rounded-full text-indigo-100 border border-indigo-600">
+          <i class="fa-solid fa-server mr-1"></i> 총 22건 등록됨
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+
+    <section class="bg-white rounded-xl shadow-md p-6 mb-8 border border-slate-200 transition-all">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        
+        <div class="lg:col-span-2">
+          <label for="searchInput" class="block text-sm font-semibold text-slate-700 mb-1">
+            <i class="fa-solid fa-magnifying-glass text-indigo-600 mr-1"></i> 서비스명 검색
+          </label>
+          <div class="relative">
+            <input 
+              type="text" 
+              id="searchInput" 
+              placeholder="예: 주민등록, 여권, 건축..." 
+              class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
+            >
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400"></i>
+            <button id="clearSearchBtn" class="hidden absolute right-3 top-3 text-slate-400 hover:text-slate-600">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label for="categoryFilter" class="block text-sm font-semibold text-slate-700 mb-1">
+            <i class="fa-solid fa-folder-tree text-indigo-600 mr-1"></i> 민원분야
+          </label>
+          <select id="categoryFilter" class="w-full py-2.5 px-3 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+            <option value="">전체 분야</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="deptFilter" class="block text-sm font-semibold text-slate-700 mb-1">
+            <i class="fa-solid fa-building text-indigo-600 mr-1"></i> 소관기관
+          </label>
+          <select id="deptFilter" class="w-full py-2.5 px-3 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+            <option value="">전체 기관</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-100">
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-medium">
+            <button id="onlineAll" class="online-btn px-3 py-1.5 rounded-md transition active-tab" data-value="all">전체</button>
+            <button id="onlineYes" class="online-btn px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition" data-value="가능">온라인 가능</button>
+            <button id="onlineNo" class="online-btn px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition" data-value="불가">온라인 불가</button>
+          </div>
+
+          <select id="sortBy" class="py-1.5 px-3 bg-slate-50 border border-slate-300 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="id-asc">기본순 (ID)</option>
+            <option value="name-asc">서비스명 (가나다순)</option>
+            <option value="period-asc">처리기한 (빠른순)</option>
+            <option value="fee-asc">수수료 (낮은순)</option>
+          </select>
+        </div>
+
+        <button id="resetBtn" class="text-xs text-slate-500 hover:text-indigo-600 font-medium flex items-center gap-1 transition px-2 py-1">
+          <i class="fa-solid fa-rotate-right"></i> 필터 초기화
+        </button>
+      </div>
+
+      <div class="mt-4 pt-3 flex flex-wrap items-center gap-2" id="categoryChips">
+        <span class="text-xs text-slate-400 mr-1 font-medium">빠른 태그:</span>
+      </div>
+    </section>
+
+    <div class="flex items-center justify-between mb-4 px-1">
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-semibold text-slate-700">검색 결과</span>
+        <span id="resultCount" class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2.5 py-1 rounded-full border border-indigo-200">
+          0건
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div class="hidden sm:flex bg-slate-200 p-1 rounded-lg text-xs">
+          <button id="viewTableBtn" class="px-2.5 py-1 rounded bg-white text-slate-800 shadow-sm font-medium"><i class="fa-solid fa-table-list mr-1"></i>테이블</button>
+          <button id="viewCardBtn" class="px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 font-medium"><i class="fa-solid fa-grip mr-1"></i>카드</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tableView" class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden transition-all">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-100 text-slate-600 text-xs font-bold uppercase border-b border-slate-200">
+              <th class="py-3.5 px-4 w-20 text-center">ID</th>
+              <th class="py-3.5 px-4">서비스명</th>
+              <th class="py-3.5 px-4">소관기관</th>
+              <th class="py-3.5 px-4">민원분야</th>
+              <th class="py-3.5 px-4 text-center">온라인 처리</th>
+              <th class="py-3.5 px-4 text-center">처리기한</th>
+              <th class="py-3.5 px-4 text-right">수수료</th>
+            </tr>
+          </thead>
+          <tbody id="serviceTableBody" class="divide-y divide-slate-100 text-sm">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="cardView" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    </div>
+
+    <div id="emptyState" class="hidden bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center my-6">
+      <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400 text-2xl">
+        <i class="fa-solid fa-magnifying-glass font-normal"></i>
+      </div>
+      <h3 class="text-lg font-bold text-slate-700 mb-1">검색 결과가 없습니다</h3>
+      <p class="text-slate-500 text-sm mb-4">입력하신 검색어나 필터 조건에 일치하는 민원 서비스가 없습니다.</p>
+      <button id="emptyResetBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition shadow-sm">
+        필터 초기화하기
+      </button>
+    </div>
+
+  </main>
+
+  <footer class="bg-slate-800 text-slate-400 text-xs py-6 border-t border-slate-700 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p>© 2026 민원 서비스 안내 시스템. All rights reserved.</p>
+      <p class="text-slate-500">본 웹페이지는 GitHub Pages 단일/분리 배포 환경에 최적화되어 있습니다.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
